@@ -30,6 +30,8 @@ Add guest information
 Add delivery address
 Click on Use another address for invoice
 Fill a second form address
+Check that the invoice form is not reloaded as a delivery form
+Validate the addresses step
 Finish the order
 */
 describe('FO - Checkout - Addresses: Use different invoice address', async () => {
@@ -103,7 +105,23 @@ describe('FO - Checkout - Addresses: Use different invoice address', async () =>
     it('should fill different delivery and invoice addresses', async function () {
       await testContext.addContextItem(this, 'testIdentifier', 'fillCustomerAddresses', baseContext);
 
-      const isStepCompleted = await foClassicCheckoutPage.setAddress(page, deliveryAddress, invoiceAddress);
+      await foClassicCheckoutPage.fillAddresses(page, deliveryAddress, invoiceAddress);
+
+      const isAddressFormVisible = await foClassicCheckoutPage.isAddressFormVisible(page);
+      expect(isAddressFormVisible).to.equal(true);
+    });
+
+    it('should check that the invoice address form has no "Use this address for invoice too" checkbox', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'checkUseSameAddressCheckbox', baseContext);
+
+      const isCheckboxVisible = await foClassicCheckoutPage.isUseSameAddressCheckboxVisible(page);
+      expect(isCheckboxVisible).to.equal(false);
+    });
+
+    it('should validate the addresses step', async function () {
+      await testContext.addContextItem(this, 'testIdentifier', 'validateAddressesStep', baseContext);
+
+      const isStepCompleted = await foClassicCheckoutPage.clickOnContinueButtonFromAddressStep(page);
       expect(isStepCompleted).to.equal(true);
     });
 
